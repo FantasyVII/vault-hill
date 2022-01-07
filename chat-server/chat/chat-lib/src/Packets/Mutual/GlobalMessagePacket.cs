@@ -4,9 +4,14 @@
     {
         public string Message { get; internal set; }
 
+        public GlobalMessagePacket()
+        {
+            Message = "";
+        }
+
         public GlobalMessagePacket PrepareRequest(Player player, string message)
         {
-            Request = PacketRequest.SendGlobalChatMessage;
+            Request = PacketRequest.GlobalChatMessage;
             Player = player;
             Message = message;
             return this;

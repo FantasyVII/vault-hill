@@ -74,60 +74,70 @@ namespace ChatServer
 
                     for (int i = lobby.PlayersCount - 1; i >= 0; i--)
                     {
-                        try
+
+                        Player player = lobby.GetPlayer(i);
+
+                        if (player.socket.Available > 0)
                         {
-                            Player player = lobby.GetPlayer(i);
+                            Console.WriteLine("Player identification data received from player!");
 
-                            if (player.socket.Available > 0)
+                            byte[] buffer = new byte[player.socket.Available];
+                            player.socket.Receive(buffer);
+
+                            BasePacket bp = new BasePacket();
+                            bp.Deserialize(buffer);
+
+                            switch (bp.Request)
                             {
-                                Console.WriteLine("Player identification data received from player!");
-
-                                byte[] buffer = new byte[player.socket.Available];
-                                player.socket.Receive(buffer);
-
-                                BasePacket bp = new BasePacket();
-                                bp.Deserialize(buffer);
-
-                                switch (bp.Request)
-                                {
-                                    case PacketRequest.SendGlobalChatMessage:
+                                case PacketRequest.GlobalChatMessage:
+                                    {
+                                        for (int j = 0; j < lobby.PlayersCount; j++)
                                         {
-                                            for (int j = 0; j < lobby.PlayersCount; j++)
+                                            Player other = lobby.GetPlayer(j);
+                                            if (other.ID != bp.Player.ID)
                                             {
-                                                Player other = lobby.GetPlayer(j);
-                                                if (other.ID != bp.Player.ID)
+                                                Console.WriteLine("Message sent");
+                                                try
                                                 {
-                                                    Console.WriteLine("Message sent");
                                                     other.socket.Send(buffer);
                                                 }
-                                            }
-                                            break;
-                                        }
-
-                                    case PacketRequest.SendPrivateChatMessage:
-                                        {
-                                            string receiverId = new PrivateMessagePacket().Deserialize(buffer).ReceiverID;
-
-                                            for (int j = 0; j < lobby.PlayersCount; j++)
-                                            {
-                                                if (lobby.GetPlayer(i).ID == receiverId)
+                                                catch (SocketException ex)
                                                 {
-                                                    lobby.GetPlayer(i).socket.Send(buffer);
-                                                    break;
+                                                    if (ex.SocketErrorCode != SocketError.WouldBlock)
+                                                        Console.WriteLine(ex);
                                                 }
                                             }
-                                            break;
                                         }
-
-                                    default:
                                         break;
-                                }
+                                    }
+
+                                case PacketRequest.PrivateChatMessage:
+                                    {
+                                        string receiverId = new PrivateMessagePacket().Deserialize(buffer).ReceiverID;
+
+                                        for (int j = 0; j < lobby.PlayersCount; j++)
+                                        {
+                                            if (lobby.GetPlayer(i).ID == receiverId)
+                                            {
+                                                try
+                                                {
+                                                    lobby.GetPlayer(i).socket.Send(buffer);
+                                                }
+                                                catch (SocketException ex)
+                                                {
+                                                    if (ex.SocketErrorCode != SocketError.WouldBlock)
+                                                        Console.WriteLine(ex);
+                                                }
+
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+
+                                default:
+                                    break;
                             }
-                        }
-                        catch (SocketException ex)
-                        {
-                            if (ex.SocketErrorCode != SocketError.WouldBlock)
-                                Console.WriteLine(ex);
                         }
                     }
                 }

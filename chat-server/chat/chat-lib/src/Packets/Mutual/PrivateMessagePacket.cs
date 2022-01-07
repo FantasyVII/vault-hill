@@ -5,9 +5,15 @@
         public string ReceiverID { get; internal set; }
         public string Message { get; internal set; }
 
+        public PrivateMessagePacket()
+        {
+            ReceiverID = "";
+            Message = "";
+        }
+
         public PrivateMessagePacket PrepareRequest(Player player, string receiverID, string message)
         {
-            Request = PacketRequest.SendPrivateChatMessage;
+            Request = PacketRequest.PrivateChatMessage;
             Player = player;
             ReceiverID = receiverID;
             Message = message;

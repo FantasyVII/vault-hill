@@ -7,7 +7,7 @@
 
         ConnectToServer,
         DisconnectFromServer,
-        SendGlobalChatMessage,
-        SendPrivateChatMessage,
+        GlobalChatMessage,
+        PrivateChatMessage,
     }
 }

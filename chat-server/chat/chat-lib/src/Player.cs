@@ -11,6 +11,8 @@ namespace ChatLib
 
         public Player()
         {
+            ID = "";
+            Name = "";
         }
 
         public Player(string id, string name, Socket socket)

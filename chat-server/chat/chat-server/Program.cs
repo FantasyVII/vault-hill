@@ -48,8 +48,7 @@ namespace ChatServer
                                 byte[] buffer = new byte[sockets[i].Available];
                                 sockets[i].Receive(buffer);
 
-                                BasePacket bp = new BasePacket();
-                                bp.Deserialize(buffer);
+                                BasePacket bp = new BasePacket().Deserialize(buffer);
 
                                 switch (bp.Request)
                                 {

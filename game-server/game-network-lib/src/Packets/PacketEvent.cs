@@ -1,12 +1,12 @@
 ﻿namespace GameNetworkLib.Packets
 {
-    public enum PacketEvents
+    public enum PacketEvent
     {
         Unknown = -1,
-        None,
         AlivePing,
 
         ConnectToServer,
         DisconnectFromServer,
+        Instantiate
     }
 }

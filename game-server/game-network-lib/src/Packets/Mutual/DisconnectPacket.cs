@@ -4,28 +4,31 @@
     {
         public DisconnectPacket PrepareRequest(Player player)
         {
-            NetworkEvents = PacketEvents.DisconnectFromServer;
-            Player = player;
-            return this;
-        }
-
-        public DisconnectPacket FailResponse(
-            Player player,
-            string responseMessage = "Failed to disconnect from server"
-            )
-        {
-            Response = PacketResponse.FailedToDisconnectFromServer;
-            ResponseMessage = responseMessage;
+            NetworkMethod = PacketMethod.Request;
+            NetworkEvent = PacketEvent.DisconnectFromServer;
             Player = player;
             return this;
         }
 
         public DisconnectPacket SuccessResponse(
+            BasePacket basePacket,
             Player player,
             string responseMessage = "Disconnected from server successfully"
             )
         {
-            Response = PacketResponse.DisconnectedFromServerSuccessfully;
+            base.SuccessResponse(basePacket);
+            ResponseMessage = responseMessage;
+            Player = player;
+            return this;
+        }
+
+        public DisconnectPacket FailResponse(
+            BasePacket basePacket,
+            Player player,
+            string responseMessage = "Failed to disconnect from server"
+            )
+        {
+            base.SuccessResponse(basePacket);
             ResponseMessage = responseMessage;
             Player = player;
             return this;

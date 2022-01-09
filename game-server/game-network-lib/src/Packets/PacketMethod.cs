@@ -1,10 +1,10 @@
 ﻿namespace GameNetworkLib.Packets
 {
-    public enum PacketResponse
+    public enum PacketMethod
     {
         Unknown = -1,
 
-        Success,
-        Failure
+        Request,
+        Response
     }
 }

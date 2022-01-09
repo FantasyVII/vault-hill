@@ -11,8 +11,11 @@ public class GameNetwork : MonoBehaviour
 {
     static GameNetwork instance;
 
+    public delegate void ConnectedToServerEvent();
+    public ConnectedToServerEvent ConnectedToServer;
+
     Socket socket;
-    Player player;
+    public Player player { get; private set; }
 
     bool runNetworkLoop;
 
@@ -29,7 +32,6 @@ public class GameNetwork : MonoBehaviour
     void Start()
     {
         runNetworkLoop = false;
-        ConnectToServer("Vivi");
     }
 
     public void ConnectToServer(string username)
@@ -38,17 +40,32 @@ public class GameNetwork : MonoBehaviour
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
         socket.Connect(ipEndPoint);
         socket.Blocking = false;
-        player = new Player(Guid.NewGuid().ToString("N"), "Vivi", ipEndPoint);
+        player = new Player(Guid.NewGuid().ToString("N"), username, ipEndPoint);
 
         socket.Send(new ConnectPacket().PrepareRequest(player).Serialize());
         runNetworkLoop = true;
+    }
+
+    public void InstantiatePlayer()
+    {
+        socket.Send(new InstantiatePacket().PrepareRequest(
+            player, "Player", Vector3.zero, Quaternion.identity).Serialize());
+
+        GameObject Go = InstantiateFromResources("Player", Vector3.zero, Quaternion.identity);
+        Go.GetComponent<MyPlayer>().SetUsername(player.Name);
+        Go.GetComponent<NetworkComponent>().SetOwnerID(player.ID);
+    }
+
+    private GameObject InstantiateFromResources(string gameObjectName, Vector3 position, Quaternion rotation)
+    {
+        GameObject player = Resources.Load<GameObject>("Player");
+        return Instantiate(player, position, rotation);
     }
 
     void Update()
     {
         if (!runNetworkLoop)
             return;
-
 
         if (socket.Available > 0)
         {
@@ -59,37 +76,49 @@ public class GameNetwork : MonoBehaviour
 
                 BasePacket bp = new BasePacket().Deserialize(receivedBuffer);
 
-                switch (bp.NetworkEvents)
+                if (bp.NetworkMethod == PacketMethod.Request)
                 {
-                    case PacketEvents.AlivePing:
-                        print("Recieved Ping");
-                        socket.Send(new PingPacket().SuccessResponse(player).Serialize());
-                        break;
-                    case PacketEvents.ConnectToServer:
-                        break;
-                    case PacketEvents.DisconnectFromServer:
-                        break;
-                    default:
-                        break;
-                }
-
-                switch (bp.Response)
-                {
-                    case PacketResponse.ConnectedToServerSuccessfully:
-                        {
-                            print("Connected to server!");
+                    switch (bp.NetworkEvent)
+                    {
+                        case PacketEvent.AlivePing:
+                            socket.Send(new PingPacket().SuccessResponse(bp, player).Serialize());
                             break;
-                        }
-                    case PacketResponse.FailedToConnectToServer:
-                        break;
-
-                    case PacketResponse.DisconnectedFromServerSuccessfully:
-                        break;
-
-                    case PacketResponse.FailedToDisconnectFromServer:
-                        break;
-                    default:
-                        break;
+                        case PacketEvent.ConnectToServer:
+                            break;
+                        case PacketEvent.DisconnectFromServer:
+                            break;
+                        case PacketEvent.Instantiate:
+                            {
+                                InstantiatePacket ip = new InstantiatePacket().Deserialize(receivedBuffer);
+                                GameObject Go = InstantiateFromResources("Player", ip.Position, ip.Rotation);
+                                Go.GetComponent<MyPlayer>().SetUsername(ip.Player.Name);
+                                Go.GetComponent<NetworkComponent>().SetOwnerID(ip.Player.ID);
+                                socket.Send(new InstantiatePacket().SuccessResponse(bp, player).Serialize());
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                else if (bp.NetworkMethod == PacketMethod.Response)
+                {
+                    switch (bp.NetworkEvent)
+                    {
+                        case PacketEvent.ConnectToServer:
+                            {
+                                if (bp.NetworkResponse == PacketResponse.Success)
+                                {
+                                    ConnectedToServer();
+                                }
+                                break;
+                            }
+                        case PacketEvent.DisconnectFromServer:
+                            break;
+                        case PacketEvent.Instantiate:
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             catch (SocketException ex)

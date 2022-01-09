@@ -4,28 +4,54 @@ namespace GameNetworkLib.Packets
 {
     public class BasePacket
     {
-        public PacketEvents NetworkEvents { get; protected set; }
-        public PacketResponse Response { get; protected set; }
+        public string ID { get; protected set; }
+        public PacketMethod NetworkMethod { get; protected set; }
+        public PacketEvent NetworkEvent { get; protected set; }
+        public PacketResponse NetworkResponse { get; protected set; }
         public string ResponseMessage { get; protected set; }
 
-        public Player Player { get; protected set; }
         public string CreationTime { get; protected set; }
+
+        public Player Player { get; protected set; }
 
         public BasePacket()
         {
-            CreationTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            NetworkEvents = PacketEvents.Unknown;
+            ID = Guid.NewGuid().ToString("N");
+            NetworkMethod = PacketMethod.Unknown;
+            NetworkEvent = PacketEvent.Unknown;
+            NetworkResponse = PacketResponse.Unknown;
             ResponseMessage = "";
+            CreationTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff");
             Player = new Player();
+        }
+
+        protected void SuccessResponse(BasePacket basePacket)
+        {
+            ID = basePacket.ID;
+            NetworkMethod = PacketMethod.Response;
+            NetworkEvent = basePacket.NetworkEvent;
+            NetworkResponse = PacketResponse.Success;
+            CreationTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff");
+        }
+
+        protected void FailResponse(BasePacket basePacket)
+        {
+            ID = basePacket.ID;
+            NetworkMethod = PacketMethod.Response;
+            NetworkEvent = basePacket.NetworkEvent;
+            NetworkResponse = PacketResponse.Failure;
+            CreationTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff");
         }
 
         protected void BeginWrite()
         {
             NetworkStream.BeginWrite();
-            NetworkStream.Write(CreationTime);
-            NetworkStream.Write((int)NetworkEvents);
-            NetworkStream.Write((int)Response);
+            NetworkStream.Write(ID);
+            NetworkStream.Write((int)NetworkMethod);
+            NetworkStream.Write((int)NetworkEvent);
+            NetworkStream.Write((int)NetworkResponse);
             NetworkStream.Write(ResponseMessage);
+            NetworkStream.Write(CreationTime);
 
             NetworkStream.Write(Player.ID);
             NetworkStream.Write(Player.Name);
@@ -40,10 +66,12 @@ namespace GameNetworkLib.Packets
         {
             NetworkStream.BeginRead(buffer);
 
-            CreationTime = NetworkStream.ReadString();
-            NetworkEvents = (PacketEvents)NetworkStream.ReadInt32();
-            Response = (PacketResponse)NetworkStream.ReadInt32();
+            ID = NetworkStream.ReadString();
+            NetworkMethod = (PacketMethod)NetworkStream.ReadInt32();
+            NetworkEvent = (PacketEvent)NetworkStream.ReadInt32();
+            NetworkResponse = (PacketResponse)NetworkStream.ReadInt32();
             ResponseMessage = NetworkStream.ReadString();
+            CreationTime = NetworkStream.ReadString();
 
             Player.ID = NetworkStream.ReadString();
             Player.Name = NetworkStream.ReadString();

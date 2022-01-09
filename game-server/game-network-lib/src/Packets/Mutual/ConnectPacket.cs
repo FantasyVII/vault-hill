@@ -4,28 +4,31 @@
     {
         public ConnectPacket PrepareRequest(Player player)
         {
-            NetworkEvents = PacketEvents.ConnectToServer;
-            Player = player;
-            return this;
-        }
-
-        public ConnectPacket FailResponse(
-            Player player, 
-            string responseMessage = "Failed to connect to server"
-            )
-        {
-            Response = PacketResponse.FailedToConnectToServer;
-            ResponseMessage = responseMessage;
+            NetworkMethod = PacketMethod.Request;
+            NetworkEvent = PacketEvent.ConnectToServer;
             Player = player;
             return this;
         }
 
         public ConnectPacket SuccessResponse(
+            BasePacket basePacket,
             Player player,
             string responseMessage = "Connected to server successfully"
             )
         {
-            Response = PacketResponse.ConnectedToServerSuccessfully;
+            base.SuccessResponse(basePacket);
+            ResponseMessage = responseMessage;
+            Player = player;
+            return this;
+        }
+
+        public ConnectPacket FailResponse(
+            BasePacket basePacket,
+            Player player,
+            string responseMessage = "Failed to connect to server"
+            )
+        {
+            base.FailResponse(basePacket);
             ResponseMessage = responseMessage;
             Player = player;
             return this;

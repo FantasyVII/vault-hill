@@ -10,21 +10,27 @@ public class UIManager : MonoBehaviour
     [SerializeField] Button connectToServerButton;
     [SerializeField] InputField usernameInputField;
 
-    [SerializeField] GameObject chatUI;
+    [SerializeField] GameObject gameUI;
     [SerializeField] Button sendChatMessageButton;
     [SerializeField] InputField chatMessageInputField;
 
     [SerializeField] GameObject chatContent;
     [SerializeField] GameObject messagePrefab;
 
+    [SerializeField] Button spawnButton;
+
     ChatNetwork chatNetwork;
+    GameNetwork gameNetwork;
 
     void Start()
     {
         chatNetwork = FindObjectOfType<ChatNetwork>();
-        chatNetwork.ConnectedToServer += OnConnectedToServer;
+        chatNetwork.ConnectedToServer += OnConnectedToChatServer;
         chatNetwork.RecievedChatMessage += OnRecievedChatMessage;
 
+        gameNetwork = FindObjectOfType<GameNetwork>();
+        gameNetwork.ConnectedToServer += OnConnectedToGameServer;
+        
         connectToServerButton.onClick.AddListener(() =>
         {
             chatNetwork.ConnectToServer(usernameInputField.text);
@@ -37,6 +43,12 @@ public class UIManager : MonoBehaviour
             go.GetComponent<Text>().text = $"{chatNetwork.player.Name}: {chatMessageInputField.text}";
             chatMessageInputField.text = "";
         });
+
+        spawnButton.onClick.AddListener(() =>
+        {
+            gameNetwork.InstantiatePlayer();
+            spawnButton.gameObject.SetActive(false);
+        });
     }
 
     void Update()
@@ -44,10 +56,15 @@ public class UIManager : MonoBehaviour
 
     }
 
-    void OnConnectedToServer()
+    void OnConnectedToChatServer()
+    {
+        gameNetwork.ConnectToServer(usernameInputField.text);
+    }
+
+    private void OnConnectedToGameServer()
     {
         welcomePanel.SetActive(false);
-        chatUI.SetActive(true);
+        gameUI.SetActive(true);
     }
 
     void OnRecievedChatMessage(string name, string message)
@@ -58,6 +75,7 @@ public class UIManager : MonoBehaviour
 
     void OnDestroy()
     {
-        chatNetwork.ConnectedToServer -= OnConnectedToServer;
+        chatNetwork.ConnectedToServer -= OnConnectedToChatServer;
+        gameNetwork.ConnectedToServer -= OnConnectedToGameServer;
     }
 }

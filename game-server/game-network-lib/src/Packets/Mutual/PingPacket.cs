@@ -4,17 +4,19 @@
     {
         public PingPacket PrepareRequest(Player player)
         {
-            NetworkEvents = PacketEvents.AlivePing;
+            NetworkMethod = PacketMethod.Request;
+            NetworkEvent = PacketEvent.AlivePing;
             Player = player;
             return this;
         }
 
         public PingPacket SuccessResponse(
+            BasePacket basePacket,
             Player player,
             string responseMessage = "Alive"
             )
         {
-            Response = PacketResponse.Alive;
+            base.SuccessResponse(basePacket);
             ResponseMessage = responseMessage;
             Player = player;
             return this;

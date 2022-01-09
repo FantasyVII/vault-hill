@@ -1,7 +1,7 @@
 ﻿using GameNetworkLib;
 using System.Collections.Generic;
 
-namespace server
+namespace GameServer
 {
     class GameRoom
     {

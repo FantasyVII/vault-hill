@@ -1,9 +1,9 @@
-﻿using ChatLib;
-using ChatLib.Packets;
-using ChatLib.Packets.Mutual;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using GameNetworkLib;
+using GameNetworkLib.Packets;
+using GameNetworkLib.Packets.Mutual;
 
 namespace server
 {

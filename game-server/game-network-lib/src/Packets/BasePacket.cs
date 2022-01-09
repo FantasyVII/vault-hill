@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChatLib.Packets
+namespace GameNetworkLib.Packets
 {
     public class BasePacket
     {

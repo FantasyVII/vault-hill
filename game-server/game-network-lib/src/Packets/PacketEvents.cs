@@ -1,4 +1,4 @@
-﻿namespace ChatLib.Packets
+﻿namespace GameNetworkLib.Packets
 {
     public enum PacketEvents
     {

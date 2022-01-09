@@ -1,4 +1,4 @@
-﻿using ChatLib;
+﻿using GameNetworkLib;
 using System.Collections.Generic;
 
 namespace server

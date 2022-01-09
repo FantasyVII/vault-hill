@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace ChatLib
+namespace GameNetworkLib
 {
     public class Player
     {

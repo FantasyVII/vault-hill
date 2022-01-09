@@ -1,4 +1,4 @@
-﻿namespace ChatLib.Packets.Mutual
+﻿namespace GameNetworkLib.Packets.Mutual
 {
     public class ConnectPacket : BasePacket
     {

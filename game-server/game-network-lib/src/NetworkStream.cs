@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ChatLib
+namespace GameNetworkLib
 {
     class NetworkStream
     {

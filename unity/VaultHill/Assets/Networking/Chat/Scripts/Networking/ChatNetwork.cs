@@ -43,7 +43,7 @@ public class ChatNetwork : MonoBehaviour
     public void ConnectToServer(string username)
     {
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        socket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 4000));
+        socket.Connect(new IPEndPoint(IPAddress.Parse("34.79.237.128"), 4000));
         socket.Blocking = false;
         runNetworkLoop = true;
 

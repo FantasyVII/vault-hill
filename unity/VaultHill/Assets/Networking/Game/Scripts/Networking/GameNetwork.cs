@@ -47,7 +47,7 @@ public class GameNetwork : MonoBehaviour
     public void ConnectToServer(string username)
     {
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3000);
+        IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("34.79.237.128"), 3000);
         socket.Connect(ipEndPoint);
         socket.Blocking = false;
         player = new Player(Guid.NewGuid().ToString("N"), username, ipEndPoint);

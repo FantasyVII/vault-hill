@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>GameNetworkLib</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\game-network-lib\src\NetworkStream.cs" Link="NetworkStream.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\BasePacket.cs" Link="BasePacket.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\Mutual\ConnectPacket.cs" Link="ConnectPacket.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\Mutual\DisconnectPacket.cs" Link="DisconnectPacket.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\Mutual\InstantiatePacket.cs" Link="InstantiatePacket.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\Mutual\PingPacket.cs" Link="PingPacket.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\Mutual\PositionPacket.cs" Link="PositionPacket.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\PacketEvent.cs" Link="PacketEvent.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\PacketMethod.cs" Link="PacketMethod.cs" />
+    <Compile Include="..\game-network-lib\src\Packets\PacketResponse.cs" Link="PacketResponse.cs" />
+    <Compile Include="..\game-network-lib\src\Player.cs" Link="Player.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

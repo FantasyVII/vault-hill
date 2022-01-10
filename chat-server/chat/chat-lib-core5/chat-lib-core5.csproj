@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>ChatLib</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\chat-lib\src\NetworkStream.cs" Link="NetworkStream.cs" />
+    <Compile Include="..\chat-lib\src\Packets\BasePacket.cs" Link="BasePacket.cs" />
+    <Compile Include="..\chat-lib\src\Packets\Mutual\ConnectPacket.cs" Link="ConnectPacket.cs" />
+    <Compile Include="..\chat-lib\src\Packets\Mutual\DisconnectPacket.cs" Link="DisconnectPacket.cs" />
+    <Compile Include="..\chat-lib\src\Packets\Mutual\GlobalMessagePacket.cs" Link="GlobalMessagePacket.cs" />
+    <Compile Include="..\chat-lib\src\Packets\Mutual\PrivateMessagePacket.cs" Link="PrivateMessagePacket.cs" />
+    <Compile Include="..\chat-lib\src\Packets\PacketRequest.cs" Link="PacketRequest.cs" />
+    <Compile Include="..\chat-lib\src\Packets\PacketResponse.cs" Link="PacketResponse.cs" />
+    <Compile Include="..\chat-lib\src\Player.cs" Link="Player.cs" />
+  </ItemGroup>
+
+</Project>

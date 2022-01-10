@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class NetworkComponent : MonoBehaviour
 {
-    GameNetwork gameNetwork;
-    string ownerID;
+    public GameNetwork gameNetwork { get; private set; }
+    public string OwnerID { get; set; }
 
     public bool IsMine
     {
         get
         {
-            if (gameNetwork.player.ID == ownerID)
+            if (gameNetwork.player.ID == OwnerID)
                 return true;
 
             return false;
@@ -19,11 +19,20 @@ public class NetworkComponent : MonoBehaviour
     void Awake()
     {
         gameNetwork = FindObjectOfType<GameNetwork>();
-        ownerID = "";
+        gameNetwork.NetworkUpdate += OnNetworkUpdate;
+        OwnerID = "";
     }
 
-    public void SetOwnerID(string ownerID)
+    public void Register(GameObject gameObject)
     {
-        this.ownerID = ownerID;
+        gameNetwork.registeredNetworkComponents.Add(this);
+    }
+
+    public void OnNetworkUpdate(GameNetwork gameNetwork)
+    {
+        if (IsMine)
+        {
+            gameNetwork.SendPosition(transform.position);
+        }
     }
 }

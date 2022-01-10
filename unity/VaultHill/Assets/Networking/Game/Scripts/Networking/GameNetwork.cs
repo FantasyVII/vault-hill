@@ -6,6 +6,7 @@ using UnityEngine;
 using GameNetworkLib;
 using GameNetworkLib.Packets;
 using GameNetworkLib.Packets.Mutual;
+using System.Collections.Generic;
 
 public class GameNetwork : MonoBehaviour
 {
@@ -19,6 +20,14 @@ public class GameNetwork : MonoBehaviour
 
     bool runNetworkLoop;
 
+    public delegate void NetworkUpdateHandler(GameNetwork gameNetwork);
+    public NetworkUpdateHandler NetworkUpdate;
+
+    float timer;
+    const float triggerTime = 1.0f / 30.0f;
+
+    public List<NetworkComponent> registeredNetworkComponents;
+
     void Awake()
     {
         if (instance == null)
@@ -31,6 +40,7 @@ public class GameNetwork : MonoBehaviour
 
     void Start()
     {
+        registeredNetworkComponents = new List<NetworkComponent>();
         runNetworkLoop = false;
     }
 
@@ -46,6 +56,11 @@ public class GameNetwork : MonoBehaviour
         runNetworkLoop = true;
     }
 
+    public void SendPosition(Vector3 position)
+    {
+        socket.Send(new PositionPacket().PrepareRequest(player, position).Serialize());
+    }
+
     public void InstantiatePlayer()
     {
         socket.Send(new InstantiatePacket().PrepareRequest(
@@ -53,7 +68,7 @@ public class GameNetwork : MonoBehaviour
 
         GameObject Go = InstantiateFromResources("Player", Vector3.zero, Quaternion.identity);
         Go.GetComponent<MyPlayer>().SetUsername(player.Name);
-        Go.GetComponent<NetworkComponent>().SetOwnerID(player.ID);
+        Go.GetComponent<NetworkComponent>().OwnerID = player.ID;
     }
 
     private GameObject InstantiateFromResources(string gameObjectName, Vector3 position, Quaternion rotation)
@@ -66,6 +81,14 @@ public class GameNetwork : MonoBehaviour
     {
         if (!runNetworkLoop)
             return;
+
+        timer += Time.deltaTime;
+
+        if (timer >= triggerTime)
+        {
+            if (NetworkUpdate != null)
+                NetworkUpdate(this);
+        }
 
         if (socket.Available > 0)
         {
@@ -92,8 +115,21 @@ public class GameNetwork : MonoBehaviour
                                 InstantiatePacket ip = new InstantiatePacket().Deserialize(receivedBuffer);
                                 GameObject Go = InstantiateFromResources("Player", ip.Position, ip.Rotation);
                                 Go.GetComponent<MyPlayer>().SetUsername(ip.Player.Name);
-                                Go.GetComponent<NetworkComponent>().SetOwnerID(ip.Player.ID);
+                                Go.GetComponent<NetworkComponent>().OwnerID = ip.Player.ID;
                                 socket.Send(new InstantiatePacket().SuccessResponse(bp, player).Serialize());
+                                break;
+                            }
+                        case PacketEvent.TrackPosition:
+                            {
+                                PositionPacket pp = new PositionPacket().Deserialize(receivedBuffer);
+                                for (int i = 0; i < registeredNetworkComponents.Count; i++)
+                                {
+                                    if (registeredNetworkComponents[i].OwnerID == pp.Player.ID)
+                                    {
+                                        registeredNetworkComponents[i].transform.position = pp.Position;
+                                    }
+                                }
+
                                 break;
                             }
                         default:

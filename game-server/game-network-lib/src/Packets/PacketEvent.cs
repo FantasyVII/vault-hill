@@ -7,6 +7,7 @@
 
         ConnectToServer,
         DisconnectFromServer,
-        Instantiate
+        Instantiate,
+        TrackPosition
     }
 }

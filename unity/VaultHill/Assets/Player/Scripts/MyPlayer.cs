@@ -11,6 +11,7 @@ public class MyPlayer : MonoBehaviour
     void Start()
     {
         networkComponent = GetComponent<NetworkComponent>();
+        networkComponent.Register(gameObject);
     }
 
     void Update()

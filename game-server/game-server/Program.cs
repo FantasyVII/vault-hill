@@ -77,6 +77,19 @@ namespace GameServer
                                         break;
                                     }
 
+                                case PacketEvent.TrackPosition:
+                                    {
+                                        for (int i = 0; i < gameRoom.PlayersCount; i++)
+                                        {
+                                            Player player = gameRoom.GetPlayer(i);
+
+                                            if (bp.Player.ID != player.ID)
+                                            {
+                                                socket.SendTo(receivedbuffer, player.ipEndpoint);
+                                            }
+                                        }
+                                        break;
+                                    }
                                 default:
                                     break;
                             }

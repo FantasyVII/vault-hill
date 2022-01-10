@@ -18,7 +18,7 @@ namespace ChatServer
 
                 Socket acceptSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 acceptSocket.Blocking = false;
-                acceptSocket.Bind(new IPEndPoint(IPAddress.Any, 42069));
+                acceptSocket.Bind(new IPEndPoint(IPAddress.Any, 4000));
                 acceptSocket.Listen(10);
 
                 Console.WriteLine("Server listening...");

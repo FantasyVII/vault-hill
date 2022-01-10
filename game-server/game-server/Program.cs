@@ -15,6 +15,8 @@ namespace GameServer
             socket.Bind(new IPEndPoint(IPAddress.Any, 3000));
             socket.Blocking = false;
 
+            Console.WriteLine("Game Server Listening!");
+
             GameRoom gameRoom = new GameRoom();
             JobManager jobManager = new JobManager(gameRoom);
 

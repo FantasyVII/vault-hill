@@ -21,7 +21,8 @@ namespace ChatServer
                 acceptSocket.Bind(new IPEndPoint(IPAddress.Any, 4000));
                 acceptSocket.Listen(10);
 
-                Console.WriteLine("Server listening...");
+                Console.WriteLine("Chat Server Listening!");
+
                 List<Socket> sockets = new List<Socket>();
 
                 while (true)
